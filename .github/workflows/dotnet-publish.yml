@@ -1,0 +1,38 @@
+name: Push a NuGet package to Azure Artifacts or GitHub Package Registry
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  BUILD_CONFIGURATION: "Release" # set this to the appropriate build configuration
+  DOTNET_VERSION: "5.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repo
+      - uses: actions/checkout@v2
+
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # Run dotnet build and package
+      - name: dotnet restore build and test
+        run: |
+          dotnet restore
+          dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
+          dotnet test --configuration '${{ env.BUILD_CONFIGURATION }}'
+
+      - name: Publish GoogleSecrets
+        uses: brandedoutcast/publish-nuget@v2.5.5
+        with:
+          PROJECT_FILE_PATH: GoogleSecrets/GoogleSecrets.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY_NEOLUTION}}
+          PACKAGE_NAME: Neolution.Extensions.Configuration.GoogleSecrets
