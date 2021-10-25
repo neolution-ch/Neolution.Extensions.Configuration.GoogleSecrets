@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace GoogleSecrets
+namespace Neolution.Extensions.Configuration.GoogleSecrets
 {
-    public class Class1
+    class Class1
     {
     }
 }
