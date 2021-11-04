@@ -12,7 +12,7 @@
     public class GoogleSecretsOptions
     {
         /// <summary>
-        /// The Map Function. Used to transform a Secret to a IConfiguration Key
+        /// The map function. Used to transform a Secret to a IConfiguration Key
         /// </summary>
         /// <param name="secret">The secret.</param>
         /// <returns>The IConfiguration Key</returns>
@@ -55,7 +55,7 @@
         /// Gets or sets the version dictionary.
         /// </summary>
         /// <value>
-        /// By default the latest version will be taken but you can request a specific version by making by
+        /// By default the latest version will be taken but you can request a specific version by
         /// suppling a dictionary entry in the form of SecretId, Version
         /// </value>
         public IDictionary<string, string> VersionDictionary { get; set; }

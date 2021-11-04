@@ -16,12 +16,12 @@
         /// </summary>
         /// <param name="configuration">The configuration.</param>
         /// <param name="options">The options.</param>
-        /// <returns>The IConfiguration Builder</returns>
+        /// <returns>The IConfigurationBuilder</returns>
         /// <exception cref="System.ArgumentNullException">options</exception>
         public static IConfigurationBuilder AddGoogleSecrets(this IConfigurationBuilder configuration, Action<GoogleSecretsOptions> options)
         {
+            _ = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _ = options ?? throw new ArgumentNullException(nameof(options));
-            _ = configuration ?? throw new ArgumentNullException(nameof(options));
 
             var googleSecretsOptions = new GoogleSecretsOptions();
             options(googleSecretsOptions);
