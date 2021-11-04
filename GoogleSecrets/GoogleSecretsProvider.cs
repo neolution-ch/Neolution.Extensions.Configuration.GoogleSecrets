@@ -45,7 +45,7 @@
             // Make the request
             PagedEnumerable<ListSecretsResponse, Secret> response = secretManagerServiceClient.ListSecrets(request);
 
-            // Iterate over pages (of server-defined size), performing one RPC per page
+            // Iterate over pages (of server-defined size), performing one RPC per page (+ an additional RPC per secret that is accessed)
             foreach (ListSecretsResponse page in response.AsRawResponses())
             {
                 foreach (Secret item in response)
