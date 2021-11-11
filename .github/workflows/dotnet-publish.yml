@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  AZURE_ARTIFACTS_FEED_URL: https://pkgs.dev.azure.com/Neolution/nuget-artifact/_packaging/Neolution/nuget/v3/index.json    
+  AZURE_ARTIFACTS_FEED_URL: https://neolution.pkgs.visualstudio.com/_packaging/Neolution/nuget/v3/index.json    
   BUILD_CONFIGURATION: 'Release'    # set this to the appropriate build configuration
   DOTNET_VERSION: '5.x' 
 
