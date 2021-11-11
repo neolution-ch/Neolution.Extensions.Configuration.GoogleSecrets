@@ -25,6 +25,12 @@
 
             var googleSecretsOptions = new GoogleSecretsOptions();
             options(googleSecretsOptions);
+
+            if (string.IsNullOrWhiteSpace(googleSecretsOptions.ProjectName))
+            {
+                throw new ArgumentNullException("ProjectName");
+            }
+
             configuration.Add(new GoogleSecretsSource(googleSecretsOptions));
 
             return configuration;
