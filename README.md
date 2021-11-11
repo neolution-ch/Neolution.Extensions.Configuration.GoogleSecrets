@@ -1,6 +1,8 @@
 # Neolution.Extensions.Configuration.GoogleSecrets
 
-This package is a configuration provider that injects google secrets into the `Microsoft.Extensions.Configuration`. It is not recommended to store secrets like connection strings in the source code directly or in environment variables. The better approach is to use a secret provider like the [secret manager](https://cloud.google.com/secret-manager) for the google cloud eco system. 
+This package is a configuration provider that injects google secrets into the `Microsoft.Extensions.Configuration`.
+
+It is not recommended to store secrets like connection strings in the source code directly or in environment variables. The better approach is to use a secret provider like the [secret manager](https://cloud.google.com/secret-manager) for the google cloud eco system. 
 
 
 
@@ -37,4 +39,40 @@ Add the custom configuration provider to your `IHostBuilder `:
 | FilterFn          | ❌                  | A filter function that will be run after the secrets are read from google (client side filtering). Supplies the `Google.Cloud.SecretManager.V1.Secret` as parameter. If returned true the secret will be processed otherwise it will be ignored. | `secret => true`                                |
 | MapFn             | ❌                  | A map function that will be run after the secrets have been filtered | `secret.SecretName.SecretId.Replace("__", ":")` |
 | VersionDictionary | ❌                  | By default the latest version of each secret is taken. But you can specify a specific version in the form of a dictionary. Key is the secret id and value is the version to take. For example: `{"MySecretId": "2"}` | `null`                                          |
+
+
+
+## Overriding default appsettings.json values
+
+You can override existing `appsettings.json` values by making sure the `MapFn` maps it to the correct path. 
+For example if we have the following `appsettings.json`:
+
+```json
+{
+  "Secrets": {
+    "MyGoogleSecret": "santa isn't real"
+  }
+}
+```
+
+
+
+We can override it by making sure that the `MapFn` maps it to `Secrets:MyGoogleSecret`. With the default `MapFn` the google secret would have to be called `Secrets__MyGoogleSecret`. 
+
+
+
+## Authentication
+
+Authorization is done automatically when run inside google cloud. To test it outside of google cloud you need to set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the json file with your credentials. More details can be found here: https://cloud.google.com/docs/authentication/getting-started#setting_the_environment_variable. You can also set the environment variable via code, for example:
+
+```c#
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\temp\\your-file.json");
+```
+
+
+
+## Version History
+
+- 1.0.1-alpha
+  - Initial Release
 
