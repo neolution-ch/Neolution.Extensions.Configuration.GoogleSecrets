@@ -14,18 +14,18 @@ Install the package using your favourite method, for example:
 Add the custom configuration provider to your `IHostBuilder `:
 
 ```c#
-        public static IHostBuilder CreateHostBuilder(string[] args)
+public static IHostBuilder CreateHostBuilder(string[] args)
+{
+    return Host.CreateDefaultBuilder(args)
+        ...
+        .ConfigureAppConfiguration((_, configuration) =>
         {
-            return Host.CreateDefaultBuilder(args)
-              	...
-                .ConfigureAppConfiguration((_, configuration) =>
-                {
-                    configuration.AddGoogleSecrets(options =>
-                    {
-                        options.ProjectName = "your-project-id";
-                    });
-                });
-        }
+            configuration.AddGoogleSecrets(options =>
+            {
+                options.ProjectName = "your-project-id";
+            });
+        });
+}
 ```
 
 
