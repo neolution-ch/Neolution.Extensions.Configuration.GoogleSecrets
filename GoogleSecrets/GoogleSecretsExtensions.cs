@@ -28,7 +28,7 @@
 
             if (string.IsNullOrWhiteSpace(googleSecretsOptions.ProjectName))
             {
-                throw new ArgumentNullException("ProjectName");
+                throw new ArgumentNullException(nameof(googleSecretsOptions.ProjectName));
             }
 
             configuration.Add(new GoogleSecretsSource(googleSecretsOptions));
