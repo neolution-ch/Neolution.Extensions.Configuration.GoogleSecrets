@@ -1,6 +1,7 @@
 name: Push a NuGet package to Azure Artifacts or GitHub Package Registry
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
