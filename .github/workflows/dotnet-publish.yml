@@ -24,14 +24,14 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       # Run dotnet build and package
-      - name: dotnet build and test
+      - name: dotnet restore build and test
         run: |
           dotnet restore
           dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
           dotnet test --configuration '${{ env.BUILD_CONFIGURATION }}'
 
       - name: Publish GoogleSecrets
-        uses: brandedoutcast/publish-nuget@v2
+        uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           PROJECT_FILE_PATH: GoogleSecrets/GoogleSecrets.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY_NEOLUTION}}
