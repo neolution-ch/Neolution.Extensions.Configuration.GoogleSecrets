@@ -73,6 +73,6 @@ Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\temp\\
 
 ## Version History
 
-- 1.0.1-alpha
+- 1.1.0-alpha
   - Initial Release
 
