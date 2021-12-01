@@ -1,2 +1,2 @@
-﻿This is my readme file and it will be displayed when the package is installed...
-
+﻿To get started use AddGoogleSecrets to add it to your ConfigureAppConfiguration. 
+More details can be found here: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets
