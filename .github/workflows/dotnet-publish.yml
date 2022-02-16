@@ -7,7 +7,8 @@ on:
       - main
 
 env:
-  BUILD_CONFIGURATION: "Release"
+  ARTIFACTS_FEED_URL: https://api.nuget.org/v3/index.json
+  BUILD_CONFIGURATION: "Release" # set this to the appropriate build configuration
   DOTNET_VERSION: "6.x"
 
 jobs:
@@ -24,16 +25,35 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       # Run dotnet build and package
-      - name: dotnet restore build and test
+      - name: dotnet build and test
         run: |
           dotnet restore
           dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
           dotnet test --configuration '${{ env.BUILD_CONFIGURATION }}'
 
-      - name: Publish Neolution.Extensions.Configuration.GoogleSecrets
-        uses: brandedoutcast/publish-nuget@v2.5.5
+  az-artifacts-build-and-deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repo
+      - uses: actions/checkout@v2
+
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          PROJECT_FILE_PATH: GoogleSecrets/GoogleSecrets.csproj
-          NUGET_KEY: ${{secrets.NUGET_API_KEY_NEOLUTION}}
-          PACKAGE_NAME: Neolution.Extensions.Configuration.GoogleSecrets
-          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: ${{ env.ARTIFACTS_FEED_URL }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
+
+      # Run dotnet build and package
+      - name: dotnet build and publish
+        run: |
+          dotnet restore
+          dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
+          dotnet pack -c '${{ env.BUILD_CONFIGURATION }}'
+
+      # Publish the package to Azure Artifacts
+      - name: "dotnet publish"
+        run: dotnet nuget push --skip-duplicate --api-key AzureArtifacts **/bin/Release/*.nupkg
