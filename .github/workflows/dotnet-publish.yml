@@ -36,5 +36,4 @@ jobs:
           PROJECT_FILE_PATH: GoogleSecrets/GoogleSecrets.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY_NEOLUTION}}
           PACKAGE_NAME: Neolution.Extensions.Configuration.GoogleSecrets
-
-
+          VERSION_REGEX: ^\s*<PackageVersion>(.*)<\/PackageVersion>\s*$
