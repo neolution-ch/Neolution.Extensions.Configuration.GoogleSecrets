@@ -73,6 +73,9 @@ Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\temp\\
 
 ## Version History
 
-- 1.1.0-alpha
+- 1.1.0
+  - Migrated from .NET Standard 2.1 to .NET 6
+
+- 1.0.1-alpha
   - Initial Release
 
