@@ -44,6 +44,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: ${{ env.ARTIFACTS_FEED_URL }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
 
       # Run dotnet build and package
       - name: dotnet build and publish
@@ -54,4 +57,6 @@ jobs:
 
       # Publish the package to Azure Artifacts
       - name: "dotnet publish"
-        run: dotnet nuget push -s ${{ env.ARTIFACTS_FEED_URL }} --skip-duplicate -k $NUGET_AUTH_TOKEN  **/bin/Release/*.nupkg
+        run: dotnet nuget push --skip-duplicate -k $NUGET_AUTH_TOKEN  **/bin/Release/*.nupkg
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
