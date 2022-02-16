@@ -73,6 +73,8 @@ Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\temp\\
 
 ## Version History
 
+- 1.1.3
+  - Updated nuget packages
 - 1.1.2
   - Fix github action to extract version from `PackageVersion` instead of `Version`
 - 1.1.0
