@@ -8,6 +8,7 @@
     using Google.Api.Gax.ResourceNames;
     using Google.Cloud.SecretManager.V1;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// The Google Secrets Provider
@@ -15,6 +16,8 @@
     /// <seealso cref="Microsoft.Extensions.Configuration.ConfigurationProvider" />
     public class GoogleSecretsProvider : ConfigurationProvider
     {
+        private readonly ILogger<GoogleSecretsProvider> logger;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleSecretsProvider"/> class.
         /// </summary>
@@ -22,6 +25,7 @@
         public GoogleSecretsProvider(GoogleSecretsSource source)
         {
             this.Source = source;
+            this.logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<GoogleSecretsProvider>();
         }
 
         /// <summary>
@@ -32,43 +36,50 @@
         /// <inheritdoc />
         public override void Load()
         {
-            // Create client
-            SecretManagerServiceClient secretManagerServiceClient = SecretManagerServiceClient.Create();
-
-            // Initialize request argument(s)
-            ListSecretsRequest request = new ListSecretsRequest
+            try
             {
-                ParentAsProjectName = ProjectName.FromProject(this.Source.ProjectName),
-                Filter = this.Source.Filter,
-            };
+                // Create client
+                SecretManagerServiceClient secretManagerServiceClient = SecretManagerServiceClient.Create();
 
-            // Make the request
-            PagedEnumerable<ListSecretsResponse, Secret> response = secretManagerServiceClient.ListSecrets(request);
-
-            // Iterate over pages (of server-defined size), performing one RPC per page (+ an additional RPC per secret that is accessed)
-            foreach (ListSecretsResponse page in response.AsRawResponses())
-            {
-                foreach (Secret item in response)
+                // Initialize request argument(s)
+                ListSecretsRequest request = new ListSecretsRequest
                 {
-                    if (!this.Source.FilterFn(item))
+                    ParentAsProjectName = ProjectName.FromProject(this.Source.ProjectName),
+                    Filter = this.Source.Filter,
+                };
+
+                // Make the request
+                PagedEnumerable<ListSecretsResponse, Secret> response = secretManagerServiceClient.ListSecrets(request);
+
+                // Iterate over pages (of server-defined size), performing one RPC per page (+ an additional RPC per secret that is accessed)
+                foreach (ListSecretsResponse page in response.AsRawResponses())
+                {
+                    foreach (Secret item in response)
                     {
-                        continue;
+                        if (!this.Source.FilterFn(item))
+                        {
+                            continue;
+                        }
+
+                        string version = "latest";
+                        var secretId = item.SecretName.SecretId;
+
+                        if (this.Source.VersionDictionary?.ContainsKey(secretId) == true)
+                        {
+                            version = this.Source.VersionDictionary[secretId];
+                        }
+
+                        string versionName = $"{item.Name}/versions/{version}";
+                        var value = secretManagerServiceClient.AccessSecretVersion(versionName);
+                        var secret = value.Payload.Data.ToStringUtf8();
+
+                        this.Set(this.Source.MapFn(item), secret);
                     }
-
-                    string version = "latest";
-                    var secretId = item.SecretName.SecretId;
-
-                    if (this.Source.VersionDictionary?.ContainsKey(secretId) == true)
-                    {
-                        version = this.Source.VersionDictionary[secretId];
-                    }
-
-                    string versionName = $"{item.Name}/versions/{version}";
-                    var value = secretManagerServiceClient.AccessSecretVersion(versionName);
-                    var secret = value.Payload.Data.ToStringUtf8();
-
-                    this.Set(this.Source.MapFn(item), secret);
                 }
+            }
+            catch (Exception e)
+            {
+                this.logger.LogError(e, "Unhandeled Exception");
             }
         }
     }
