@@ -75,6 +75,8 @@ Simply run the command `gcloud auth application-default login` (after you have r
 
 ## Version History
 
+- 1.1.5
+  - Back to .NET Standard 2.1
 - 1.1.4
   - Added more logging
   - Skipping unretrievalable secrets
