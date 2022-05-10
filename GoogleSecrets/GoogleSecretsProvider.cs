@@ -54,26 +54,36 @@
                 // Iterate over pages (of server-defined size), performing one RPC per page (+ an additional RPC per secret that is accessed)
                 foreach (ListSecretsResponse page in response.AsRawResponses())
                 {
-                    foreach (Secret item in response)
+                    foreach (Secret secret in response)
                     {
-                        if (!this.Source.FilterFn(item))
+                        if (!this.Source.FilterFn(secret))
                         {
                             continue;
                         }
 
                         string version = "latest";
-                        var secretId = item.SecretName.SecretId;
+                        var secretId = secret.SecretName.SecretId;
 
                         if (this.Source.VersionDictionary?.ContainsKey(secretId) == true)
                         {
                             version = this.Source.VersionDictionary[secretId];
                         }
 
-                        string versionName = $"{item.Name}/versions/{version}";
-                        var value = secretManagerServiceClient.AccessSecretVersion(versionName);
-                        var secret = value.Payload.Data.ToStringUtf8();
+                        try
+                        {
+                            string versionName = $"{secret.Name}/versions/{version}";
+                            var value = secretManagerServiceClient.AccessSecretVersion(versionName);
+                            var secretValue = value.Payload.Data.ToStringUtf8();
 
-                        this.Set(this.Source.MapFn(item), secret);
+                            this.Set(this.Source.MapFn(secret), secretValue);
+                            this.logger.LogInformation($"Successfully loaded secret {secret.SecretName.SecretId}");
+                        }
+                        catch (Exception e)
+                        {
+                            this.logger.LogWarning(e, $"Skipping secret {secret.SecretName.SecretId}");
+                        }
+
+
                     }
                 }
             }
