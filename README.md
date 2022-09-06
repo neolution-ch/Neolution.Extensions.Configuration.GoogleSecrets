@@ -73,8 +73,77 @@ Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", "C:\\temp\\
 
 Simply run the command `gcloud auth application-default login` (after you have run `gcloud auth login`). This will set up the application default credentials using your personal account.
 
+## Known issues:
+
+### Running in Alpine Linux docker container fails with "Grpc.Core.Internal.UnmanagedLibrary Attempting to load native library "/app/libgrpc_csharp_ext.x64.so"
+
+If you run this nuget inside an alpine docker container you might get an error message similar to this:
+
+```
+System.IO.IOException: Error loading native library "/app/runtimes/linux-x64/native/libgrpc_csharp_ext.x64.so". Error loading shared library ld-linux-x86-64.so.2: No such file or directory (needed by /app/runtimes/linux-x64/native/libgrpc_csharp_ext.x64.so)
+         at Grpc.Core.Internal.UnmanagedLibrary..ctor(String[] libraryPathAlternatives)
+         at Grpc.Core.Internal.NativeExtension.LoadNativeMethodsUsingExplicitLoad()
+         at Grpc.Core.Internal.NativeExtension.LoadNativeMethods()
+         at Grpc.Core.Internal.NativeExtension..ctor()
+         at Grpc.Core.Internal.NativeExtension.Get()
+         at Grpc.Core.Internal.NativeMethods.Get()
+         at Grpc.Core.GrpcEnvironment.GrpcNativeInit()
+         at Grpc.Core.GrpcEnvironment..ctor()
+         at Grpc.Core.GrpcEnvironment.AddRef()
+         at Grpc.Core.Channel..ctor(String target, ChannelCredentials credentials, IEnumerable`1 options)
+         at Google.Api.Gax.Grpc.GrpcCore.GrpcCoreAdapter.CreateChannelImpl(String endpoint, ChannelCredentials credentials, GrpcChannelOptions options)
+         at Google.Api.Gax.Grpc.GrpcAdapter.CreateChannel(String endpoint, ChannelCredentials credentials, GrpcChannelOptions options)
+         at Google.Api.Gax.Grpc.ChannelPool.GetChannel(GrpcAdapter grpcAdapter, String endpoint, GrpcChannelOptions channelOptions, ChannelCredentials credentials)
+         at Google.Api.Gax.Grpc.ChannelPool.GetChannel(GrpcAdapter grpcAdapter, String endpoint, GrpcChannelOptions channelOptions)
+         at Google.Api.Gax.Grpc.ClientBuilderBase`1.CreateCallInvoker()
+         at Google.Cloud.SecretManager.V1.SecretManagerServiceClientBuilder.BuildImpl()
+         at Neolution.Extensions.Configuration.GoogleSecrets.GoogleSecretsProvider.Load()
+```
+
+To fix it you need to add the following to your `Dockerfile` to manaully build the missing library:
+
+```
+# we need temporarly this library untill the issue is solved
+# https://github.com/grpc/grpc/issues/21446#issuecomment-807990690
+# can be removed once Google.Cloud.SecretManager.V1 does not relay on GRCP, there is a fix at the end as well
+FROM alpine:3.13 AS grpc-build
+WORKDIR /opt
+RUN apk add --update alpine-sdk autoconf libtool linux-headers cmake git && \
+    \
+    git clone -b v1.36.4 https://github.com/grpc/grpc --depth 1 --shallow-submodules && \
+    cd grpc && git submodule update --init --depth 1 && \
+    \
+    mkdir -p cmake/build && cd cmake/build && \
+    \
+    cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+      -DgRPC_BACKWARDS_COMPATIBILITY_MODE=ON \
+      -DgRPC_BUILD_TESTS=OFF \
+      ../.. && \
+    \
+    make grpc_csharp_ext -j4 && \
+    \
+    mkdir -p /out && cp libgrpc_csharp_ext.* /out
+```
+
+And than at the end of your `Dockerfile` copy the outputs from the `grpc-build` stage:
+
+```
+# copy the grpc library required
+COPY --from=grpc-build /out/libgrpc_csharp_ext.so /app/libgrpc_csharp_ext.x64.so
+```
+
+To speed things up you can push the `grpc-build` stage to a docker registry and pull it from there:
+
+```
+COPY --from=docker.io/your-grpc-build-image /out/libgrpc_csharp_ext.so /app/libgrpc_csharp_ext.x64.so
+```
+
+ref: https://github.com/grpc/grpc/issues/21446
+
 ## Version History
 
+- 1.1.7
+  - Updated readme with info about running in alpine linux docker container
 - 1.1.6
   - Downgraded Microsoft.Extension packages from 6.0.0 to 3.1.0
 - 1.1.5
