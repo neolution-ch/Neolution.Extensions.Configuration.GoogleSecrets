@@ -2,10 +2,9 @@
 name: Publish NuGet package
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    tags: 
+      - 'v*.*.*'
 
 env:
   ARTIFACTS_FEED_URL: https://api.nuget.org/v3/index.json
@@ -13,31 +12,13 @@ env:
   DOTNET_VERSION: "6.x"
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       # Checkout the repo
       - uses: actions/checkout@v2
-
-      # Setup .NET Core SDK
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      # Run dotnet build and package
-      - name: dotnet build and test
-        run: |
-          dotnet restore
-          dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
-          dotnet test --configuration '${{ env.BUILD_CONFIGURATION }}'
-
-  az-artifacts-build-and-deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout the repo
-      - uses: actions/checkout@v2
+          fetch-depth: 0 # Needed for GitVersion to function correctly
 
       # Setup .NET Core SDK
       - name: Setup .NET Core
@@ -48,12 +29,20 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
 
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+          
+      - name: Determine version number
+        uses: gittools/actions/gitversion/execute@v0.9.7
+
       # Run dotnet build and package
       - name: dotnet build and publish
         run: |
           dotnet restore
           dotnet build --configuration '${{ env.BUILD_CONFIGURATION }}'
-          dotnet pack -c '${{ env.BUILD_CONFIGURATION }}'
+          dotnet pack --configuration '${{ env.BUILD_CONFIGURATION }}' --no-build -p:PackageVersion=$GITVERSION_NUGETVERSION
 
       # Publish the package to Azure Artifacts
       - name: "dotnet publish"
