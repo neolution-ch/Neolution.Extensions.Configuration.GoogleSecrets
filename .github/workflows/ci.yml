@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   check-changelog:
+    name: Check CHANGELOG.md
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +32,9 @@ jobs:
             echo '### :boom: Please update the changelog accordingly (https://keepachangelog.com)' >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
-  ci:
+
+  dotnet-build:
+    name: dotnet build and pack
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
