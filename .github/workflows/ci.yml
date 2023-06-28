@@ -43,7 +43,9 @@ jobs:
 
       - run: dotnet build -c Release
 
-      - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts -p:PackageVersion="${{ github.run_id }}-${{ github.run_attempt }}"
+      - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts
+
+      - run: mv ./artifacts/*.nupkg ./artifacts/${{ github.run_id }}-${{ github.run_attempt }}.nupkg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
