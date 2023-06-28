@@ -45,7 +45,7 @@ jobs:
 
       - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts
 
-      - run: mv ./artifacts/*.nupkg ./artifacts/${{ github.run_id }}-${{ github.run_attempt }}.nupkg
+      - run: mv ./artifacts/*.nupkg ./artifacts/Neolution.Extensions.Configuration.GoogleSecrets.${{ github.run_id }}-${{ github.run_attempt }}.nupkg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
