@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   check-changelog:
-    name: Check CHANGELOG.md
+    name: check CHANGELOG.md
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
