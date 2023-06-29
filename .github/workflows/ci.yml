@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, ready_for_review]
+
+# cancel running actions for current PR if new commits were pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-changelog:
+    name: check CHANGELOG.md
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37
+
+      - name: Check if changelog was touched
+        run: |
+          changelogFound=$(echo ${{ steps.changed-files.outputs.all_changed_files }} | grep -ow "CHANGELOG.md" | wc -w)
+          if [ $changelogFound -eq 0 ]; then
+            echo '### :boom: Please update the changelog accordingly (https://keepachangelog.com)' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  dotnet-build:
+    name: dotnet build and pack
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.x
+
+      - run: dotnet build -c Release
+
+      - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts
+
+      - run: mv ./artifacts/*.nupkg ./artifacts/Neolution.Extensions.Configuration.GoogleSecrets.${{ github.run_id }}-${{ github.run_attempt }}.nupkg
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "nuget-package"
+          path: ./artifacts/*.nupkg
