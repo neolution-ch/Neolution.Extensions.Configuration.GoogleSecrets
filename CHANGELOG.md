@@ -7,6 +7,10 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the Google.Cloud.SecretManager.V1 to the latest version to support workload identity federation
+
 ### Added
 
 - Changelog
