@@ -7,8 +7,6 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
-## [1.1.8] - 2023-06-29
-
 ### Added
 
 - Changelog
