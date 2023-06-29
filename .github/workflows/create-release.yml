@@ -44,7 +44,7 @@ jobs:
           git config user.email release-bot@neolution.ch
 
       - name: install @release-it/keep-a-changelog
-        run: npm install -g release-it @release-it/keep-a-changelog @neolution-ch/release-it-dotnet-plugin
+        run: yarn add release-it @release-it/keep-a-changelog @neolution-ch/release-it-dotnet-plugin
 
       - name: run release-it
         run: |
@@ -64,6 +64,6 @@ jobs:
           params+=(--plugins.@neolution-ch/release-it-dotnet-plugin.nugetApiKey=${{ secrets.NUGET_API_KEY_NEOLUTION }})
 
           echo "command: release-it ${params[@]}"
-          release-it "${params[@]}"
+          yarn release-it "${params[@]}"
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
