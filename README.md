@@ -38,6 +38,10 @@ public static IHostBuilder CreateHostBuilder(string[] args)
 
 ## Overriding default appsettings.json values
 
+To override the default `appsettings.json` values you have to options which you can use together or separately:
+
+### Use the `MapFn` to map the secret to the correct path
+
 You can override existing `appsettings.json` values by making sure the `MapFn` maps it to the correct path.
 For example if we have the following `appsettings.json`:
 
@@ -50,6 +54,22 @@ For example if we have the following `appsettings.json`:
 ```
 
 We can override it by making sure that the `MapFn` maps it to `Secrets:MyGoogleSecret`. With the default `MapFn` the google secret would have to be called `Secrets__MyGoogleSecret`.
+
+### Use the {GoogleSecrets:SecretName:SecretVersion} syntax
+
+In the `appsettings.json` you can use the `{GoogleSecrets:SecretName:SecretVersion}` syntax to override the default values. For example:
+
+```json
+{
+  "Secrets": {
+    "MyGoogleSecret": "{GoogleSecrets:MyGoogleSecret:latest}"
+  }
+}
+```
+
+will override the `MyGoogleSecret` with the latest version of the secret `MyGoogleSecret`.
+
+**Note: The Version is optional and can be omitted. If omitted the latest version will be taken.**
 
 ## Authentication
 

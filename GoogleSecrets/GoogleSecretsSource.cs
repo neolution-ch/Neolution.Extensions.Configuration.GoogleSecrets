@@ -62,7 +62,7 @@
         /// </returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new GoogleSecretsProvider(this);
+            return new GoogleSecretsProvider(this, builder);
         }
     }
 }
