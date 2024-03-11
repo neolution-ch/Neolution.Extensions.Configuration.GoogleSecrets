@@ -25,12 +25,12 @@
         /// Initializes a new instance of the <see cref="GoogleSecretsProvider"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <param name="configurationBuilder">The configuration builder.</param>
-        public GoogleSecretsProvider(GoogleSecretsSource source, IConfigurationBuilder configurationBuilder)
+        /// <param name="existingConfiguration">The configuration builder.</param>
+        public GoogleSecretsProvider(GoogleSecretsSource source, IConfigurationRoot existingConfiguration)
         {
             this.Source = source;
             this.logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<GoogleSecretsProvider>();
-            this.existingConfiguration = configurationBuilder.Build();
+            this.existingConfiguration = existingConfiguration;
             this.secretCache = new Dictionary<string, string>();
         }
 
@@ -107,8 +107,8 @@
             void ScanExistingConfiguration(SecretManagerServiceClient secretManagerServiceClient, Secret secret)
             {
                 var existingKeyValues = this.existingConfiguration.AsEnumerable();
-                // value will be in the format of {GoogleSecrets:SecretName} or {GoogleSecrets:SecretName:Version}
-                var keyValuesToReplace = existingKeyValues.Where(x => x.Value.StartsWith($"{{GoogleSecrets:{secret.SecretName.SecretId}"));
+                // value will be in the format of {GoogleSecret:SecretName} or {GoogleSecret:SecretName:Version}
+                var keyValuesToReplace = existingKeyValues.Where(x => x.Value?.StartsWith($"{{GoogleSecret:{secret.SecretName.SecretId}") == true);
 
                 foreach (var keyValue in keyValuesToReplace)
                 {

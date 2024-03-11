@@ -13,11 +13,14 @@
     /// <seealso cref="Microsoft.Extensions.Configuration.IConfigurationSource" />
     public class GoogleSecretsSource : IConfigurationSource
     {
+        private readonly IConfigurationRoot existingConfig;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleSecretsSource"/> class.
         /// </summary>
         /// <param name="options">The options.</param>
-        public GoogleSecretsSource(GoogleSecretsOptions options)
+        /// <param name="existingConfig">The existing configuration.</param>
+        public GoogleSecretsSource(GoogleSecretsOptions options, IConfigurationRoot existingConfig)
         {
             _ = options ?? throw new ArgumentNullException(nameof(options));
 
@@ -26,6 +29,7 @@
             this.ProjectName = options.ProjectName;
             this.Filter = options.Filter;
             this.VersionDictionary = options.VersionDictionary;
+            this.existingConfig = existingConfig;
         }
 
         /// <summary>
@@ -62,7 +66,7 @@
         /// </returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new GoogleSecretsProvider(this, builder);
+            return new GoogleSecretsProvider(this, existingConfig);
         }
     }
 }

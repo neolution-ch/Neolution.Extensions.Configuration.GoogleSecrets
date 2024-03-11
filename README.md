@@ -55,14 +55,14 @@ For example if we have the following `appsettings.json`:
 
 We can override it by making sure that the `MapFn` maps it to `Secrets:MyGoogleSecret`. With the default `MapFn` the google secret would have to be called `Secrets__MyGoogleSecret`.
 
-### Use the {GoogleSecrets:SecretName:SecretVersion} syntax
+### Use the {GoogleSecret:SecretName:SecretVersion} syntax
 
-In the `appsettings.json` you can use the `{GoogleSecrets:SecretName:SecretVersion}` syntax to override the default values. For example:
+In the `appsettings.json` you can use the `{GoogleSecret:SecretName:SecretVersion}` syntax to override the default values. For example:
 
 ```json
 {
   "Secrets": {
-    "MyGoogleSecret": "{GoogleSecrets:MyGoogleSecret:latest}"
+    "MyGoogleSecret": "{GoogleSecret:MyGoogleSecret:latest}"
   }
 }
 ```
