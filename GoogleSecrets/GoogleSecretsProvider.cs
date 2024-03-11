@@ -70,7 +70,7 @@
                             }
 
                             ScanExistingConfiguration(secretManagerServiceClient, secret);
-                            ReplaceWithMapFn(secretManagerServiceClient, secret);
+                            ApplyMapFn(secretManagerServiceClient, secret);
                         }
                         catch (Exception e)
                         {
@@ -123,8 +123,13 @@
                 }
             }
 
-            void ReplaceWithMapFn(SecretManagerServiceClient secretManagerServiceClient, Secret secret)
+            void ApplyMapFn(SecretManagerServiceClient secretManagerServiceClient, Secret secret)
             {
+                if (this.Source.MapFn == null)
+                {
+                    return;
+                }
+
                 string version = "latest";
                 var secretId = secret.SecretName.SecretId;
 
