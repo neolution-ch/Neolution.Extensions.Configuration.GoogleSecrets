@@ -7,6 +7,8 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+## [1.3.0] - 2024-03-12
+
 ### Added
 
 Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to override the default values in the `appsettings.json` or `appsettings.{Environment}.json` files.
@@ -23,6 +25,7 @@ Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to overri
 
 - Changelog
 
-[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.2.0...HEAD
+[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.1.9...1.2.0
 [1.1.9]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.1.7...1.1.9
