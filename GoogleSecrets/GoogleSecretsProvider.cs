@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.WebSockets;
     using System.Threading.Tasks;
     using Google.Api.Gax;
     using Google.Api.Gax.ResourceNames;
@@ -17,15 +18,20 @@
     public class GoogleSecretsProvider : ConfigurationProvider
     {
         private readonly ILogger<GoogleSecretsProvider> logger;
+        private readonly IConfigurationRoot existingConfiguration;
+        private readonly Dictionary<string, string> secretCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GoogleSecretsProvider"/> class.
         /// </summary>
         /// <param name="source">The source.</param>
-        public GoogleSecretsProvider(GoogleSecretsSource source)
+        /// <param name="existingConfiguration">The configuration builder.</param>
+        public GoogleSecretsProvider(GoogleSecretsSource source, IConfigurationRoot existingConfiguration)
         {
             this.Source = source;
             this.logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<GoogleSecretsProvider>();
+            this.existingConfiguration = existingConfiguration;
+            this.secretCache = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -56,40 +62,83 @@
                 {
                     foreach (Secret secret in response)
                     {
-                        if (!this.Source.FilterFn(secret))
-                        {
-                            continue;
-                        }
-
-                        string version = "latest";
-                        var secretId = secret.SecretName.SecretId;
-
-                        if (this.Source.VersionDictionary?.ContainsKey(secretId) == true)
-                        {
-                            version = this.Source.VersionDictionary[secretId];
-                        }
-
                         try
                         {
-                            string versionName = $"{secret.Name}/versions/{version}";
-                            var value = secretManagerServiceClient.AccessSecretVersion(versionName);
-                            var secretValue = value.Payload.Data.ToStringUtf8();
+                            if (!this.Source.FilterFn(secret))
+                            {
+                                continue;
+                            }
 
-                            this.Set(this.Source.MapFn(secret), secretValue);
-                            this.logger.LogInformation($"Successfully loaded secret {secret.SecretName.SecretId}");
+                            ScanExistingConfiguration(secretManagerServiceClient, secret);
+                            ApplyMapFn(secretManagerServiceClient, secret);
                         }
                         catch (Exception e)
                         {
                             this.logger.LogWarning(e, $"Skipping secret {secret.SecretName.SecretId}");
                         }
-
-
                     }
                 }
             }
             catch (Exception e)
             {
                 this.logger.LogError(e, "Unhandeled Exception");
+            }
+
+            void SetSecretValue(SecretManagerServiceClient secretManagerServiceClient, Secret secret, string key, string version)
+            {
+                string versionName = $"{secret.Name}/versions/{version}";
+
+                if (secretCache.TryGetValue(versionName, out var cachedValue))
+                {
+                    this.Set(key, cachedValue);
+                    this.logger.LogDebug($"Using cached value for secret {secret.SecretName.SecretId} Key: {key} Version: {version}");
+                }
+                else
+                {
+                    var value = secretManagerServiceClient.AccessSecretVersion(versionName);
+                    var secretValue = value.Payload.Data.ToStringUtf8();
+                    secretCache[versionName] = secretValue;
+                    this.Set(key, secretValue);
+                }
+
+                this.logger.LogInformation($"Successfully loaded secret {secret.SecretName.SecretId} into configuration. Key: {key} Version: {version}");
+            }
+
+            void ScanExistingConfiguration(SecretManagerServiceClient secretManagerServiceClient, Secret secret)
+            {
+                var existingKeyValues = this.existingConfiguration.AsEnumerable();
+                // value will be in the format of {GoogleSecret:SecretName} or {GoogleSecret:SecretName:Version}
+                var keyValuesToReplace = existingKeyValues.Where(x => x.Value?.StartsWith($"{{GoogleSecret:{secret.SecretName.SecretId}") == true);
+
+                foreach (var keyValue in keyValuesToReplace)
+                {
+                    var replaceParams = keyValue.Value.Split(':');
+                    string version = "latest";
+                    if (replaceParams.Length >= 3)
+                    {
+                        version = replaceParams[2];
+                    }
+
+                    SetSecretValue(secretManagerServiceClient, secret, keyValue.Key, version);
+                }
+            }
+
+            void ApplyMapFn(SecretManagerServiceClient secretManagerServiceClient, Secret secret)
+            {
+                if (this.Source.MapFn == null)
+                {
+                    return;
+                }
+
+                string version = "latest";
+                var secretId = secret.SecretName.SecretId;
+
+                if (this.Source.VersionDictionary?.ContainsKey(secretId) == true)
+                {
+                    version = this.Source.VersionDictionary[secretId];
+                }
+
+                SetSecretValue(secretManagerServiceClient, secret, this.Source.MapFn(secret), version);
             }
         }
     }

@@ -28,7 +28,7 @@
                 throw new ArgumentNullException(nameof(googleSecretsOptions.ProjectName));
             }
 
-            configuration.Add(new GoogleSecretsSource(googleSecretsOptions));
+            configuration.Add(new GoogleSecretsSource(googleSecretsOptions, configuration.Build()));
 
             return configuration;
         }

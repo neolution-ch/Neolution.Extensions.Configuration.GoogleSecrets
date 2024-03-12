@@ -7,6 +7,10 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Added
+
+Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to override the default values in the `appsettings.json` or `appsettings.{Environment}.json` files.
+
 ## [1.2.0] - 2023-06-29
 
 ### Changed
