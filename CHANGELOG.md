@@ -7,6 +7,8 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+## [1.3.1] - 2024-03-12
+
 ### Fixed
 
 - Fixed an issue where the `GoogleSecret:SecretName:SecretVersion` syntax was not working as expected. Instead of using a starts with comparison, the code now uses a regular expression to match the secret name and version.
@@ -30,7 +32,8 @@ Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to overri
 
 - Changelog
 
-[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.0...HEAD
+[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.1.9...1.2.0
 [1.1.9]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.1.7...1.1.9
