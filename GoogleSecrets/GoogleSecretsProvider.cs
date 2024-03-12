@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.WebSockets;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Google.Api.Gax;
     using Google.Api.Gax.ResourceNames;
@@ -108,7 +109,8 @@
             {
                 var existingKeyValues = this.existingConfiguration.AsEnumerable();
                 // value will be in the format of {GoogleSecret:SecretName} or {GoogleSecret:SecretName:Version}
-                var keyValuesToReplace = existingKeyValues.Where(x => x.Value?.StartsWith($"{{GoogleSecret:{secret.SecretName.SecretId}") == true);
+                var regex = new Regex($@"\{{GoogleSecret:{secret.SecretName.SecretId}(?::(\w+))?}}");
+                var keyValuesToReplace = existingKeyValues.Where(x => !string.IsNullOrWhiteSpace(x.Value) && regex.IsMatch(x.Value));
 
                 foreach (var keyValue in keyValuesToReplace)
                 {
@@ -116,7 +118,7 @@
                     string version = "latest";
                     if (replaceParams.Length >= 3)
                     {
-                        version = replaceParams[2];
+                        version = replaceParams[2].Substring(0, replaceParams[2].Length - 1);
                     }
 
                     SetSecretValue(secretManagerServiceClient, secret, keyValue.Key, version);
