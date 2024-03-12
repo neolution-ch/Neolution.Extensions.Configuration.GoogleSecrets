@@ -7,6 +7,11 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed an issue where the `GoogleSecret:SecretName:SecretVersion` syntax was not working as expected. Instead of using a starts with comparison, the code now uses a regular expression to match the secret name and version.
+- Fixed an issue where the `GoogleSecret:SecretName:SecretVersion` syntax was not working as expected. The version was parsed including the `}` character. The code now removes the `}` character from the version before calling the google api.
+
 ## [1.3.0] - 2024-03-12
 
 ### Added
