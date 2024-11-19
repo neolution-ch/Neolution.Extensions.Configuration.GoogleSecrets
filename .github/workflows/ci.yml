@@ -17,13 +17,13 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v37
+        uses: tj-actions/changed-files@v45
 
       - name: Check if changelog was touched
         run: |
@@ -38,9 +38,9 @@ jobs:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.x
 
@@ -51,7 +51,7 @@ jobs:
       - run: mv ./artifacts/*.nupkg ./artifacts/Neolution.Extensions.Configuration.GoogleSecrets.${{ github.run_id }}-${{ github.run_attempt }}.nupkg
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "nuget-package"
           path: ./artifacts/*.nupkg
