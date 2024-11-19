@@ -51,7 +51,7 @@ jobs:
       - run: mv ./artifacts/*.nupkg ./artifacts/Neolution.Extensions.Configuration.GoogleSecrets.${{ github.run_id }}-${{ github.run_attempt }}.nupkg
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "nuget-package"
           path: ./artifacts/*.nupkg
