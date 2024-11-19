@@ -7,6 +7,10 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Dependabot
+
+- Update GitHub Actions to use the latest versions of the actions
+
 ## [1.3.1] - 2024-03-12
 
 ### Fixed
