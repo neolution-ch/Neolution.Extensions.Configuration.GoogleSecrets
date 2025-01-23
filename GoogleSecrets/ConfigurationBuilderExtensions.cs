@@ -6,7 +6,7 @@
     /// <summary>
     /// The Google Secrets Extensions
     /// </summary>
-    public static class GoogleSecretsExtensions
+    public static class ConfigurationBuilderExtensions
     {
         /// <summary>
         /// Adds the google secrets.
