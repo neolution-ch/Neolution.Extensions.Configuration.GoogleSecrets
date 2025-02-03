@@ -1,0 +1,16 @@
+name: Notify Slack Channel
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: neolution-ch/action-release-notifier@v1
+        with:
+          slack-token: ${{ secrets.SLACK_RELEASE_NOTIFIER_TOKEN }}
+          slack-channel-ids: ${{ vars.SLACK_CHANNEL_ID_RELEASE_ANNOUNCEMENTS }}
+          ignore-alpha-releases: true
+          ignore-rc-releases: true
