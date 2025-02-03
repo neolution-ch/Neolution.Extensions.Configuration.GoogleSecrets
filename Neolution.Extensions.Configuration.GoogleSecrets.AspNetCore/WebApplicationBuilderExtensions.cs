@@ -1,46 +1,29 @@
-﻿namespace Neolution.Extensions.Configuration.GoogleSecrets
+﻿namespace Neolution.Extensions.Configuration.GoogleSecrets.AspNetCore
 {
     using System;
     using Microsoft.AspNetCore.Builder;
 
     /// <summary>
-    /// WebBuilder extensions for Google Secrets
+    /// Google Secrets extensions for <see cref="WebApplicationBuilder"/>.
     /// </summary>
     public static class WebApplicationBuilderExtensions
     {
         /// <summary>
-        /// Gets the value of the environment variable of the google secrets project which decides where to load secrets from.
-        /// </summary>
-        /// <value>
-        ///     The string with the project name
-        /// </value>
-        private static string GoogleSecretsProjectName => Environment.GetEnvironmentVariable("GOOGLE_SECRETS_PROJECT") ?? "default-project-goes-here";
-
-        /// <summary>
-        /// Gets a value indicating whether to load google secrets or not
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> to load google secrets; otherwise not.
-        /// </value>
-        private static bool LoadGoogleSecrets => bool.TryParse(Environment.GetEnvironmentVariable("LOAD_GOOGLE_SECRETS"), out var result) && result;
-
-        /// <summary>
-        /// Adds the Google secrets.
+        /// Adds the Google secrets to the <see cref="WebApplicationBuilder"/>.
+        /// Uses the GOOGLE_SECRETS_PROJECT environment variable as the project name.
         /// </summary>
         /// <param name="builder">The builder.</param>
         public static void AddGoogleSecrets(this WebApplicationBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
-            // Configure app configuration to add Google Secrets if applicable
-            if (LoadGoogleSecrets)
+            // Configure app configuration to add Google Secrets if environment variable is set
+            var googleSecretProject = Environment.GetEnvironmentVariable(EnvironmentVariableNames.GoogleSecretsProject);
+            if (!string.IsNullOrWhiteSpace(googleSecretProject))
             {
                 builder.Configuration.AddGoogleSecrets(options =>
                 {
-                    options.ProjectName = GoogleSecretsProjectName;
+                    options.ProjectName = googleSecretProject;
                 });
             }
         }
