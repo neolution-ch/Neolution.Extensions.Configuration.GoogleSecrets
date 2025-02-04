@@ -1,0 +1,39 @@
+name: Publish NuGet package
+
+on:
+  release:
+    types: [published]
+
+env:
+  ARTIFACTS_FEED_URL: https://api.nuget.org/v3/index.json
+  BUILD_CONFIGURATION: "Release"
+  DOTNET_VERSION: "8.x"
+
+jobs:
+  build-pack-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          source-url: ${{ env.ARTIFACTS_FEED_URL }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
+
+      - name: Determine version for NuGet package
+        run: echo NUGET_VERSION=${GITHUB_REF#refs/tags/v} >> $GITHUB_ENV
+
+      - name: Build and pack
+        run: |
+          dotnet restore
+          dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} -p:Version=$NUGET_VERSION
+          dotnet pack --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore --no-build -p:PackageVersion=$NUGET_VERSION
+
+      - name: Push NuGet package
+        run: echo "dotnet nuget push -k $NUGET_AUTH_TOKEN  **/bin/Release/*.nupkg"
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
