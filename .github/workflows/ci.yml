@@ -46,7 +46,7 @@ jobs:
 
       - run: dotnet build -c Release
 
-      - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts /p:PackageVersion=$(date -d "${GITHUB_RUN_TIMESTAMP}" "+%Y.%-m.%-d")-ci.${{ github.run_attempt }}${{ github.run_id }}
+      - run: dotnet pack -c Release --no-build --no-restore -o ./artifacts -p:PackageVersion=$(date -d "${GITHUB_RUN_TIMESTAMP}" "+%Y.%-m.%-d")-ci.${{ github.run_attempt }}${{ github.run_id }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
