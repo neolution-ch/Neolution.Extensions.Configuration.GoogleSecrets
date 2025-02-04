@@ -7,7 +7,12 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
-### Dependabot
+### Added
+
+- Convention to load Google Secrets project name from environment variable `GOOGLE_SECRETS_PROJECT` if not specified in the options.
+- New package `Neolution.Extensions.Configuration.GoogleSecrets.AspNetCore` to reference in ASP.NET Core projects.
+
+### Changed
 
 - Update GitHub Actions to use the latest versions of the actions
 

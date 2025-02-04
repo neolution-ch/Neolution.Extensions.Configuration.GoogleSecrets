@@ -3,23 +3,29 @@ name: Create Release
 on:
   workflow_dispatch:
     inputs:
-      version_type:
+      versioning_phase:
         type: choice
-        description: Semantic Version Type
+        description: Versioning Phase
+        default: stable
         options:
-          - automatic
+          - alpha
+          - beta
+          - rc
+          - stable
+
+      bump_version_number:
+        type: choice
+        description: Bump Version Number
+        default: consecutive
+        options:
+          - consecutive
           - patch
           - minor
           - major
 
-      pre_release:
-        type: choice
-        description: Stage
-        options:
-          - stable
-          - rc
-          - beta
-          - alpha
+      is_dry_run:
+        type: boolean
+        description: Dry Run
 
 jobs:
   release-it:
@@ -43,27 +49,30 @@ jobs:
           git config user.name "GitHub Release Bot"
           git config user.email release-bot@neolution.ch
 
-      - name: install @release-it/keep-a-changelog
-        run: yarn add release-it @release-it/keep-a-changelog @neolution-ch/release-it-dotnet-plugin
+      - name: install release-it with plugins
+        run: npm install -g release-it @release-it/keep-a-changelog
 
       - name: run release-it
         run: |
           params=()
 
-          if [[ ${{ github.event.inputs.version_type }} != "automatic" ]]; then
-              params+=(${{ github.event.inputs.version_type }})
+          if [[ ${{ github.event.inputs.bump_version_number }} != "consecutive" ]]; then
+              params+=(${{ github.event.inputs.bump_version_number }})
           fi
 
-          if [[ ${{ github.event.inputs.pre_release }} != "stable" ]]; then
-              params+=(--preRelease=${{ github.event.inputs.pre_release }})
+          if [[ ${{ github.event.inputs.versioning_phase }} != "stable" ]]; then
+              params+=(--preRelease=${{ github.event.inputs.versioning_phase }})
               params+=(--plugins.@release-it/keep-a-changelog.keepUnreleased)
               params+=(--no-plugins.@release-it/keep-a-changelog.strictLatest)
           fi
 
+          if [[ ${{ github.event.inputs.is_dry_run }} == "true" ]]; then
+              params+=(--dry-run)
+          fi
+
           params+=(--ci)
-          params+=(--plugins.@neolution-ch/release-it-dotnet-plugin.nugetApiKey=${{ secrets.NUGET_API_KEY_NEOLUTION }})
 
           echo "command: release-it ${params[@]}"
-          yarn release-it "${params[@]}"
+          release-it "${params[@]}"
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

@@ -15,11 +15,6 @@
       "addVersionUrl": true,
       "addUnreleased": true,
       "strictLatest": false
-    },
-    "@neolution-ch/release-it-dotnet-plugin": {
-      "csprojFile": "./GoogleSecrets/GoogleSecrets.csproj",
-      "buildConfiguration": "Release",
-      "nugetApiKey": "overridden in GitHub workflow"
     }
   },
   "hooks": {
