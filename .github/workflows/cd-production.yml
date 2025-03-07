@@ -25,15 +25,15 @@ jobs:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
 
       - name: Determine version for NuGet package
-        run: echo NUGET_VERSION=${GITHUB_REF#refs/tags/v} >> $GITHUB_ENV
+        run: echo NUGET_VERSION=${GITHUB_REF#refs/tags/} >> $GITHUB_ENV
 
       - name: Build and pack
         run: |
           dotnet restore
-          dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} -p:Version=$NUGET_VERSION
-          dotnet pack --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore --no-build -p:PackageVersion=$NUGET_VERSION
+          dotnet build --configuration ${{ env.BUILD_CONFIGURATION }} --no-restore -p:Version=$NUGET_VERSION
+          dotnet pack --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --no-restore -p:PackageVersion=$NUGET_VERSION
 
       - name: Push NuGet package
-        run: echo "dotnet nuget push -k $NUGET_AUTH_TOKEN  **/bin/Release/*.nupkg"
+        run: dotnet nuget push -k $NUGET_AUTH_TOKEN  **/bin/Release/*.nupkg
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY_NEOLUTION }}
