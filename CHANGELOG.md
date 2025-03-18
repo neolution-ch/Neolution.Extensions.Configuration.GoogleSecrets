@@ -7,6 +7,8 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-03-18
+
 ### Added
 
 - Convention to load Google Secrets project name from environment variable `GOOGLE_SECRETS_PROJECT` if not specified in the options.
@@ -41,7 +43,8 @@ Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to overri
 
 - Changelog
 
-[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.1...HEAD
+[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.1.9...1.2.0
