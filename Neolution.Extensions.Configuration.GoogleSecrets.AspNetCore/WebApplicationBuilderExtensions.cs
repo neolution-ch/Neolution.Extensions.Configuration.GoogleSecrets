@@ -17,15 +17,20 @@
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            // Configure app configuration to add Google Secrets if environment variable is set
-            var googleSecretProject = Environment.GetEnvironmentVariable(EnvironmentVariableNames.GoogleSecretsProject);
-            if (!string.IsNullOrWhiteSpace(googleSecretProject))
-            {
-                builder.Configuration.AddGoogleSecrets(options =>
-                {
-                    options.ProjectName = googleSecretProject;
-                });
-            }
+            builder.Configuration.AddGoogleSecrets(_ => { });
+        }
+
+        /// <summary>
+        /// Adds the Google secrets to the <see cref="WebApplicationBuilder"/>.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="googleSecretsOptions"></param>
+        public static void AddGoogleSecrets(this WebApplicationBuilder builder, Action<GoogleSecretsOptions> googleSecretsOptions)
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(googleSecretsOptions);
+
+            builder.Configuration.AddGoogleSecrets(googleSecretsOptions);
         }
     }
 }

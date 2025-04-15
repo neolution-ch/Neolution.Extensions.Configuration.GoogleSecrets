@@ -45,6 +45,12 @@
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(this.Source.ProjectName))
+                {
+                    this.logger.LogWarning("ProjectName is not set. Skipping Google Secrets Provider.");
+                    return;
+                }
+
                 // Create client
                 SecretManagerServiceClient secretManagerServiceClient = SecretManagerServiceClient.Create();
 

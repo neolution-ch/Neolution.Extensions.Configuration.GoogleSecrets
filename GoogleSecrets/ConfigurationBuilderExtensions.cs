@@ -17,16 +17,6 @@
         /// <exception cref="System.ArgumentNullException">options</exception>
         public static IConfigurationBuilder AddGoogleSecrets(this IConfigurationBuilder configuration)
         {
-            // Configure app configuration to add Google Secrets if environment variable is set
-            var googleSecretProject = Environment.GetEnvironmentVariable(EnvironmentVariableNames.GoogleSecretsProject);
-            if (!string.IsNullOrWhiteSpace(googleSecretProject))
-            {
-                return AddGoogleSecrets(configuration, options =>
-                {
-                    options.ProjectName = googleSecretProject;
-                });
-            }
-
             return AddGoogleSecrets(configuration, _ => { });
         }
 
@@ -44,11 +34,6 @@
 
             var googleSecretsOptions = new GoogleSecretsOptions();
             options(googleSecretsOptions);
-
-            if (string.IsNullOrWhiteSpace(googleSecretsOptions.ProjectName))
-            {
-                throw new ArgumentNullException(nameof(googleSecretsOptions.ProjectName));
-            }
 
             configuration.Add(new GoogleSecretsSource(googleSecretsOptions, configuration.Build()));
 
