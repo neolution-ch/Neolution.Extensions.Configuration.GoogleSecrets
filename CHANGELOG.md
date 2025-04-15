@@ -7,6 +7,10 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Added
+
+- Added new overload for `AddGoogleSecrets` to allow passing `GoogleSecretsOptions`.
+
 ## [1.4.0] - 2025-03-18
 
 ### Added

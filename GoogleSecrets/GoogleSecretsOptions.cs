@@ -41,7 +41,7 @@
         /// <value>
         /// The name of the project or the numeric project id
         /// </value>
-        public string ProjectName { get; set; }
+        public string ProjectName { get; set; } = Environment.GetEnvironmentVariable(EnvironmentVariableNames.GoogleSecretsProject) ?? string.Empty;
 
         /// <summary>
         /// Gets or sets the filter.
