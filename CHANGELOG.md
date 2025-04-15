@@ -7,6 +7,8 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+## [1.5.0] - 2025-04-15
+
 ### Added
 
 - Added new overload for `AddGoogleSecrets` to allow passing `GoogleSecretsOptions`.
@@ -47,7 +49,8 @@ Added support for the `{GoogleSecret:SecretName:SecretVersion}` syntax to overri
 
 - Changelog
 
-[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.4.0...HEAD
+[unreleased]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/neolution-ch/Neolution.Extensions.Configuration.GoogleSecrets/compare/1.2.0...1.3.0
