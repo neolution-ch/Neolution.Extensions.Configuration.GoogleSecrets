@@ -51,6 +51,8 @@
                     return;
                 }
 
+                this.logger.LogInformation($"Loading secrets from project {this.Source.ProjectName}");
+
                 // Create client
                 SecretManagerServiceClient secretManagerServiceClient = SecretManagerServiceClient.Create();
 

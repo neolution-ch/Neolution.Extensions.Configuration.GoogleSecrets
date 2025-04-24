@@ -7,6 +7,10 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+### Added
+
+- Added a log message to indicate which project is being used for Google Secrets. This is useful for debugging and understanding which project is being used when multiple projects are available.
+
 ## [1.5.0] - 2025-04-15
 
 ### Added
