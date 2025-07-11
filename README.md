@@ -159,23 +159,3 @@ COPY --from=docker.io/your-grpc-build-image /out/libgrpc_csharp_ext.so /app/libg
 ```
 
 ref: https://github.com/grpc/grpc/issues/21446
-
-## Version History
-
-- 1.1.7
-  - Updated readme with info about running in alpine linux docker container
-- 1.1.6
-  - Downgraded Microsoft.Extension packages from 6.0.0 to 3.1.0
-- 1.1.5
-  - Back to .NET Standard 2.1
-- 1.1.4
-  - Added more logging
-  - Skipping unretrievalable secrets
-- 1.1.3
-  - Updated nuget packages
-- 1.1.2
-  - Fix github action to extract version from `PackageVersion` instead of `Version`
-- 1.1.0
-  - Migrated from .NET Standard 2.1 to .NET 6
-- 1.0.1-alpha
-  - Initial Release
