@@ -7,6 +7,8 @@ and adheres to a project-specific [Versioning](/README.md).
 
 ## [Unreleased]
 
+- Add LICENSE file
+
 ## [1.6.0] - 2025-04-24
 
 ### Added
